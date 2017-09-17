@@ -2,7 +2,6 @@ myApps
 *.sln
 *.VC.db
 *.VC.VC.opendb
-*.pdf
 *.res
 *.obj
 *.pdb
