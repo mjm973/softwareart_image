@@ -23,7 +23,7 @@ void ofApp::draw() {
 
 	goal.visualize();
 
-	guiPanel.draw();
+	//guiPanel.draw();
 }
 
 //--------------------------------------------------------------
@@ -140,8 +140,6 @@ void Goal::visualize() {
 		destStep = i / iter;
 
 		ofPushMatrix();
-
-		//center = center.getInterpolated(destination, step);
 
 		ofTranslate(center.getInterpolated(destination, destStep));
 
