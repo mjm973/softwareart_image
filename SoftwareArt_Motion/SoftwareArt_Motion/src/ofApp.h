@@ -32,6 +32,8 @@ class ofApp : public ofBaseApp {
 
 	ofxPanel gui;
 	ofxSlider<int> resolution;
+	ofxToggle pauseScroll;
+	ofxToggle pauseRotation;
 	int prevResolution = 0;
 
 	vector<vector<vector<Slash>>> matrix;
@@ -43,7 +45,14 @@ class ofApp : public ofBaseApp {
 	ofCamera cam;
 	float theta = 0;
 
+	ofTrueTypeFont c64;
+
+	bool bSave = false;
+
 public:
+	static ofColor c64bg;
+	static ofColor c64type;
+
 	void setup();
 	void update();
 	void draw();
@@ -61,4 +70,6 @@ public:
 	void gotMessage(ofMessage msg);
 
 	void prepareMatrix(int res);
+	void drawFrame();
+	void drawText();
 };

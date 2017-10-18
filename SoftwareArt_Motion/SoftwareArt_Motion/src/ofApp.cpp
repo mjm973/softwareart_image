@@ -1,13 +1,21 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
+ofColor ofApp::c64bg = ofColor(66, 66, 229);
+
+ofColor ofApp::c64type = ofColor(165, 165, 255);
+
 void ofApp::setup() {
 	gui.setup("floop");
 	gui.add(resolution.setup("Resolution", 6, 1, 15));
+	gui.add(pauseScroll.setup("Pause Scroll", false));
+	gui.add(pauseRotation.setup("Pause Rotation", false));
 
 	cam.setFov(75);
-	
+
 	prepareMatrix(resolution);
+
+	c64.load("C64_Pro_Mono-STYLE.ttf", 16);
 }
 
 //--------------------------------------------------------------
@@ -15,7 +23,7 @@ void ofApp::update() {
 	if (resolution != prevResolution) {
 		prepareMatrix(resolution);
 	}
-	else {
+	else if (!pauseScroll) {
 		matrix[zNow][yNow][xNow].reroll();
 
 		if (++xNow >= resolution) {
@@ -33,13 +41,16 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
 	cam.begin();
-	ofBackground(0);
 
-	ofSetColor(27, 234, 183, 180);
+	ofBackground(c64bg);
 
 	ofPushMatrix();
 	ofTranslate(0, 0, -1200);
-	ofRotateY(theta += 0.05);
+	ofRotateY(theta);
+
+	if (!pauseRotation) {
+		theta += 0.05;
+	}
 
 	for (int z = 0; z < resolution; ++z) {
 		for (int y = 0; y < resolution; ++y) {
@@ -53,13 +64,28 @@ void ofApp::draw() {
 
 	cam.end();
 
-	gui.draw();
+	ofSetColor(c64type);
 
+	drawFrame();
+	drawText();
+
+	if (bSave) {
+		ofSaveFrame(true);
+	}
+	else
+	{
+		gui.draw();
+	}
+
+	bSave = false;
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
-
+	switch (key) {
+	case ' ':
+		bSave = true;
+	}
 }
 
 //--------------------------------------------------------------
@@ -146,6 +172,22 @@ void ofApp::prepareMatrix(int res) {
 	prevResolution = resolution;
 }
 
+void ofApp::drawFrame() {
+	ofDrawRectangle(0, 0, ofGetWidth(), 50);
+	ofDrawRectangle(0, ofGetHeight() - 50, ofGetWidth(), 50);
+	ofDrawRectangle(0, 0, 50, ofGetHeight());
+	ofDrawRectangle(ofGetWidth() - 50, 0, 50, ofGetHeight());
+}
+
+void ofApp::drawText() {
+	c64.drawString("   ****   COMMODORE 2017   ****", 80, 84);
+
+	char str[255];
+	int res = resolution;
+	sprintf(str, "100 PRINT - RUNNING: RESOLUTION %d", res);
+	c64.drawString(str, 80, ofGetHeight() - 70);
+}
+
 // ././././././././././././../././././
 
 Slash::Slash() {
@@ -204,14 +246,18 @@ void Slash::display() {
 
 ofMesh Slash::makeMesh(ofVec3f v1, ofVec3f v2, ofVec3f v3, ofVec3f v4) {
 	ofMesh mesh;
+	//ofColor col = ofColor(27, 234, 183, 60);
+	//ofColor col = ofColor(66, 66, 229, 60);
+	ofColor col = ofColor(165, 165, 255, 60);
+
 	mesh.addVertex(v1);
-	mesh.addColor(ofColor(27, 234, 183, 60));
+	mesh.addColor(col);
 	mesh.addVertex(v2);
-	mesh.addColor(ofColor(27, 234, 183, 60));
+	mesh.addColor(col);
 	mesh.addVertex(v3);
-	mesh.addColor(ofColor(27, 234, 183, 60));
+	mesh.addColor(col);
 	mesh.addVertex(v4);
-	mesh.addColor(ofColor(27, 234, 183, 60));
+	mesh.addColor(col);
 	mesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
 
 	return mesh;
